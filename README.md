@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AI Web Scraper & Summarizer
 
-## Getting Started
+A full-stack web application that takes any webpage URL, extracts its readable content using a server-side scraping engine (Cheerio), and generates a structured summary using Groq's high-speed AI inference.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- **Server-Side Scraping**: Uses Cheerio to fetch and parse HTML markup on the server, stripping scripts, styles, navigation, footers, and ads.
+- **Fast AI Inference**: Summarizes extracted content using Groq's free cloud inference endpoint (`openai/gpt-oss-120b`).
+- **Clean SaaS Interface**: Minimal, accessible light theme with live scraping scan animations and shimmering skeleton states.
+- **Structured Briefing**: Outputs clean Markdown with key takeaways, overview, word count metrics, and estimated reading time.
+- **Export Capabilities**: One-click clipboard copy and direct `.md` file download.
+
+---
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Frontend**: React 19, Tailwind CSS v4, Lucide Icons
+- **Backend**: Next.js API Routes (Node.js runtime)
+- **Scraper**: Cheerio
+- **AI Engine**: Groq SDK (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)
+- **Markdown Rendering**: React-Markdown
+
+---
+
+## Project Structure
+
+```text
+├── app/
+│   ├── api/summarize/
+│   │   └── route.js        # Backend API route (POST /api/summarize)
+│   ├── globals.css         # Global styles & markdown formatting
+│   ├── layout.js           # Root layout
+│   └── page.js             # Main frontend page
+├── components/
+│   ├── ErrorCard.jsx       # Error handling display
+│   ├── Features.jsx        # Feature overview section
+│   ├── LoadingCard.jsx     # Shimmer skeleton loader & animation
+│   ├── Navbar.jsx          # Header navigation
+│   ├── SummaryCard.jsx     # Structured summary display & export
+│   └── UrlForm.jsx         # URL input form & scan animation
+├── lib/
+│   ├── ai.js               # Groq AI summarization service
+│   └── scraper.js          # Server-side Cheerio HTML parser
+└── .env.local              # Environment variables (API Key)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Local Setup & Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Follow these steps to run both the frontend and backend locally. Since this is built with Next.js, **a single development server runs both frontend and backend simultaneously**.
 
-## Learn More
+### 1. Clone the Repository
+```bash
+git clone https://github.com/prashant-pandey-4/Web-Scrapper.git
+cd Web-Scrapper
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Environment Variables Configuration
+Create a `.env.local` file in the root directory:
+```bash
+touch .env.local
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open `.env.local` and add your Groq API key:
+```env
+# Get your free API key at https://console.groq.com
+GROQ_API_KEY=gsk_your_groq_api_key_here
+```
 
-## Deploy on Vercel
+> **Note:** Groq provides a 100% free API tier without requiring a credit card. Generate your key in 1 click at [console.groq.com/keys](https://console.groq.com/keys).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. Run the Application
+Start the unified frontend + backend local server:
+```bash
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open your browser and navigate to:
+```text
+http://localhost:3000
+```
+
+---
+
+## API Documentation
+
+### `POST /api/summarize`
+
+Receives a URL, scrapes the content on the server, and returns the AI-generated summary.
+
+#### Request Body
+```json
+{
+  "url": "https://en.wikipedia.org/wiki/Artificial_intelligence"
+}
+```
+
+#### Response Body
+```json
+{
+  "success": true,
+  "title": "Artificial intelligence - Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+  "summary": "### Overview\n...",
+  "stats": {
+    "totalWords": 1420,
+    "charsAnalyzed": 9850
+  }
+}
+```
+
+---
+
+## Deployment (Vercel)
+
+The easiest way to deploy this application is using [Vercel](https://vercel.com):
+
+1. Push your code to your GitHub repository.
+2. Go to [vercel.com](https://vercel.com) and import the repository.
+3. In **Environment Variables**, add:
+   - Key: `GROQ_API_KEY`
+   - Value: `gsk_your_groq_api_key_here`
+4. Click **Deploy**. Vercel will build and host both frontend and serverless API functions automatically.
